@@ -9,3 +9,5 @@
 1) установить JDK, наример: jdk-20_windows-x64_bin.msi
 2) установить Connector/J, например из файла: mysql-installer-community-8.0.33.0.msi
 3) добавить в системную переменную CLASSPATH след. строку: .;C:\Program Files (x86)\MySQL\Connector J 8.0\mysql-connector-j-8.0.33.jar;
+
+Пример не требует web-сервера Apache. Достаточно запустить файл Test.bat и открыить страницу: http://localhost:8000/
