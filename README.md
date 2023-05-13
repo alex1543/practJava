@@ -3,7 +3,7 @@
 
 Внешний вид главного окна в браузере:
 
-![image](https://github.com/alex1543/practJava/assets/10297748/6d2988ec-9246-4531-bc7b-1cac4b572f33)
+![image](https://github.com/alex1543/practJava/assets/10297748/492ab4fb-b62f-458e-8a2a-325ac32ba2f0)
 
 Пример гарантированно работает при последовательности следующих действий:
 1) установить JDK, например: jdk-20_windows-x64_bin.msi
