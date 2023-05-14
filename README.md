@@ -10,4 +10,4 @@
 2) установить Connector/J, например из файла: mysql-installer-community-8.0.33.0.msi
 3) добавить в системную переменную CLASSPATH след. строку: .;C:\Program Files (x86)\MySQL\Connector J 8.0\mysql-connector-j-8.0.33.jar;
 
-Пример не требует web-сервера Apache. Достаточно запустить файл Test.bat и открыть страницу: http://localhost:8000/
+Пример не требует web-сервера Apache. Достаточно запустить файл Test.bat и открыть страницу: http://localhost:8000/ Для работы с одной таблицей, необходимо выполнить скрипт экспорта: import_test.sql
