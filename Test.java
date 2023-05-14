@@ -18,6 +18,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+
 public class Test {
 
     public static void main(String[] args) throws Exception {
@@ -33,6 +39,14 @@ public class Test {
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
+			
+			// разбор параметров и добавление строки.
+			String qStr = t.getRequestURI().getQuery();
+			System.out.println(qStr);
+			Map<String, String> params = queryToMap(qStr);
+			if (params != null)	rowInsert(params.get("col1"), params.get("col2"), params.get("col3"));
+			
+			// отображение страницы в браузере.
             t.sendResponseHeaders(200, 0);
             OutputStream os = t.getResponseBody();
 			
@@ -52,6 +66,24 @@ public class Test {
         }
     }
 
+	// разбор параметров GET.
+	public static Map<String, String> queryToMap(String query) {
+		if(query == null) {
+			return null;
+		}
+		Map<String, String> result = new HashMap<>();
+		for (String param : query.split("&")) {
+			String[] entry = param.split("=");
+			if (entry.length > 1) {
+				result.put(entry[0], entry[1]);
+			}else{
+				result.put(entry[0], "");
+			}
+		}
+		return result;
+	}
+
+	// получение таблицы с заголовком.
 	public static String viewSelect() {
 		String line_all = "";
 
@@ -87,6 +119,7 @@ public class Test {
 		return line_all;
 	}
 
+	// получение версии БД.
 	public static String viewVer() {
 		String line_ver = "";
 
@@ -105,5 +138,18 @@ public class Test {
             sqlEx.printStackTrace();
 		}
 		return line_ver;
+	}
+	
+	// добавление одной строки.
+	public static void rowInsert(String par1, String par2, String par3) {
+		try {
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate("INSERT INTO myarttable (text, description, keywords) VALUES ('"+par1+"', '"+par2+"', '"+par3+"')");
+			conn.close();
+			System.out.println("A row added.");
+		} catch (SQLException sqlEx) {
+            sqlEx.printStackTrace();
+		}
 	}
 }
