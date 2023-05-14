@@ -20,9 +20,6 @@ import java.util.Properties;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collections;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
 
 public class Test {
 
