@@ -36,30 +36,40 @@ public class Test {
     static class MyHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange t) throws IOException {
-			
-			// разбор параметров и добавление строки.
-			String qStr = t.getRequestURI().getQuery();
-			System.out.println(qStr);
-			Map<String, String> params = queryToMap(qStr);
-			if (params != null)	rowInsert(params.get("col1"), params.get("col2"), params.get("col3"));
-			
-			// отображение страницы в браузере.
-            t.sendResponseHeaders(200, 0);
-            OutputStream os = t.getResponseBody();
-			
-			// чтение шаблона.
-			File file = new File("select.html");
-            FileReader fr = new FileReader(file);
-            BufferedReader reader = new BufferedReader(fr);
-            String line = reader.readLine();
-            while (line != null) {
-				if ((line.indexOf("@tr") == -1) && (line.indexOf("@ver") == -1)) os.write(line.getBytes());
-				if (line.indexOf("@tr") != -1) os.write(viewSelect().getBytes());
-				if (line.indexOf("@ver") != -1) os.write(viewVer().getBytes());
+			// открытие подкл. к MySQL.
+			try {
+				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
+				Statement stmt = conn.createStatement();
 				
-                line = reader.readLine();
-            }
-            os.close();
+				// разбор параметров и добавление строки.
+				String qStr = t.getRequestURI().getQuery();
+				System.out.println(qStr);
+				Map<String, String> params = queryToMap(qStr);
+				if (params != null)	rowInsert(stmt, params.get("col1"), params.get("col2"), params.get("col3"));
+				
+				// отображение страницы в браузере.
+				t.sendResponseHeaders(200, 0);
+				OutputStream os = t.getResponseBody();
+				
+				// чтение шаблона.
+				File file = new File("select.html");
+				FileReader fr = new FileReader(file);
+				BufferedReader reader = new BufferedReader(fr);
+				String line = reader.readLine();
+				while (line != null) {
+					if ((line.indexOf("@tr") == -1) && (line.indexOf("@ver") == -1)) os.write(line.getBytes());
+					if (line.indexOf("@tr") != -1) os.write(viewSelect(stmt).getBytes());
+					if (line.indexOf("@ver") != -1) os.write(viewVer(stmt).getBytes());
+					
+					line = reader.readLine();
+				}
+				os.close();
+				
+				conn.close();
+			
+			} catch (SQLException sqlEx) {
+				sqlEx.printStackTrace();
+			}
         }
     }
 
@@ -81,12 +91,10 @@ public class Test {
 	}
 
 	// получение таблицы с заголовком.
-	public static String viewSelect() {
+	public static String viewSelect(Statement stmt) {
 		String line_all = "";
-
 		try {
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
-            Statement stmt = conn.createStatement();
+
 			ResultSet rs1 = stmt.executeQuery("SHOW COLUMNS FROM myarttable");
 			line_all = line_all + "<tr>";
 			while (rs1.next()) {
@@ -108,29 +116,20 @@ public class Test {
 			   line_all = line_all + "<tr><td>" + id + "</td><td>" + text + "</td><td>" + description + "</td><td>" + keywords + "</td></tr>";
 			}
 
-			conn.close();
-
-        } catch (SQLException sqlEx) {
-            sqlEx.printStackTrace();
+		} catch (SQLException sqlEx) {
+			sqlEx.printStackTrace();
 		}
 		return line_all;
 	}
 
 	// получение версии БД.
-	public static String viewVer() {
+	public static String viewVer(Statement stmt) {
 		String line_ver = "";
-
 		try {
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
-            Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT VERSION() AS ver");
-
 			while (rs.next()) {
 			   line_ver = rs.getString(1);
 			}
-
-			conn.close();
-
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
 		}
@@ -138,12 +137,9 @@ public class Test {
 	}
 	
 	// добавление одной строки.
-	public static void rowInsert(String par1, String par2, String par3) {
+	public static void rowInsert(Statement stmt, String par1, String par2, String par3) {
 		try {
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","");
-			Statement stmt = conn.createStatement();
 			stmt.executeUpdate("INSERT INTO myarttable (text, description, keywords) VALUES ('"+par1+"', '"+par2+"', '"+par3+"')");
-			conn.close();
 			System.out.println("A row added.");
 		} catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
