@@ -14,8 +14,12 @@
 
 # practJava/mac
 Допустима работа скрипта на macOS.
-Необходимо установить: 1) mysql-8.0.33-macos13-arm64.pkg
-2) mysql-connector-c++-8.0.33-macos13-arm64.dmg
+Необходимо установить: 
+1) JDK, например: jdk-20_macos-aarch64_bin.dmg с официального сайта: https://www.oracle.com/java/technologies/downloads/
+2) mysql-8.0.33-macos13-arm64.pkg
+3) mysql-connector-c++-8.0.33-macos13-arm64.dmg
+Проверить, что есть файл по след. пути: /Library/Java/Extensions/mysql-connector-j-8.0.33.jar
+
 Пример гарантированно работает под macOS Ventura 13.4.1 (22F82).
 
 Внешний вид главного одна в родном браузере Safari:
